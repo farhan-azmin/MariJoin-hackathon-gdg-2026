@@ -129,27 +129,27 @@ export default function Applicants() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-full text-left border-collapse">
-            <thead>
+            <thead className="bg-neutral-100">
               <tr>
-                <th className="py-4 pr-4 text-sm font-medium text-gray-500 border-b border-gray-100 w-12"></th>
-                <th className="py-4 px-4 text-sm font-medium text-gray-500 border-b border-gray-100 w-1/4">Name</th>
-                <th className="py-4 px-4 text-sm font-medium text-gray-500 border-b border-gray-100 w-1/2">
+                <th className="py-4 pr-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-12"></th>
+                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/4">Name</th>
+                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/2">
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="#603ADE">
+                    <svg className="w-4 h-4 text-[#603ADE]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
                     Summary
                   </div>
                 </th>
-                <th className="py-4 px-4 text-sm font-medium text-gray-500 border-b border-gray-100">Score</th>
-                <th className="py-4 pl-4 text-sm font-medium text-gray-500 border-b border-gray-100 text-right"></th>
+                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200">Score</th>
+                <th className="py-4 pl-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 text-right"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {paginatedApplicants.length > 0 ? (
                 paginatedApplicants.map((app, index) => (
                   <tr key={app.id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="py-4 pr-4 text-sm text-gray-500">{startIndex + index + 1}</td>
+                    <td className="py-4 pr-4 text-sm text-gray-500 pl-4">{startIndex + index + 1}</td>
                     <td className="py-4 px-4 text-sm text-gray-800 font-medium">{app.name}</td>
                     <td className="py-4 px-4 text-sm text-gray-600">{app.summary}</td>
                     <td className="py-4 px-4 text-sm text-gray-800">
@@ -158,7 +158,7 @@ export default function Applicants() {
                         {app.score}%
                       </div>
                     </td>
-                    <td className="py-4 pl-4 text-right">
+                    <td className="py-4 pl-4 text-right pr-4">
                       <div className="flex items-center justify-end gap-4">
                         <button 
                           onClick={() => handleApprove(app.id, app.name)}
