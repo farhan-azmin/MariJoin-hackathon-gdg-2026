@@ -4,17 +4,21 @@ import { Startup, Mentor, Programme } from '../types';
 const generateStartups = (count: number): Startup[] => {
   const industries = ['FinTech', 'HealthTech', 'EdTech', 'AgriTech', 'Logistics', 'ClimateTech', 'SaaS', 'E-commerce', 'AI / Machine Learning'];
   const stages = ['Idea', 'Pre-Seed', 'Seed', 'Series A', 'Growth stage'];
-  const problems = [
-    'Inefficient supply chain management in rural areas.',
-    'Lack of accessible financial services for gig workers.',
-    'High cost of early childhood education.',
-    'Poor patient data interoperability between hospitals.',
-    'Excessive food waste in the hospitality sector.',
-    'Manual and error-prone compliance reporting.',
-    'Difficulty in tracking carbon emissions for SMEs.',
-    'Low engagement in corporate training programs.',
-    'Fragmented communication in remote teams.',
-    'Lack of personalized mental health support.'
+  
+  const goals = [
+    'Expand into the Southeast Asian market and acquire 10,000 new users.',
+    'Secure Series A funding to scale operations and hire key talent.',
+    'Develop a working MVP and conduct initial beta testing.',
+    'Establish strategic partnerships with local hospitals and clinics.',
+    'Achieve profitability within the next 18 months through B2B sales.'
+  ];
+  
+  const challenges = [
+    'Inefficient supply chain management in rural areas causing delays.',
+    'Lack of accessible financial services for gig workers leading to high churn.',
+    'High cost of early childhood education limiting market penetration.',
+    'Poor patient data interoperability between hospitals slowing down adoption.',
+    'Excessive food waste in the hospitality sector requiring complex logistics.'
   ];
 
   const prefixes = ['Aero', 'Bio', 'Cyber', 'Data', 'Eco', 'Fin', 'Geo', 'Health', 'Info', 'Lumi', 'Mega', 'Nano', 'Omni', 'Poly', 'Quantum', 'Robo', 'Smart', 'Tech', 'Ultra', 'Velo'];
@@ -33,7 +37,8 @@ const generateStartups = (count: number): Startup[] => {
       industry: industries[i % industries.length],
       stage: stages[i % stages.length],
       funding: `$${(i * 15000) % 2000000}`,
-      problemSolved: problems[i % problems.length]
+      primaryGoals: goals[i % goals.length],
+      currentChallenges: challenges[i % challenges.length]
     });
   }
   return startups;
