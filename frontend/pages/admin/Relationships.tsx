@@ -24,11 +24,19 @@ export default function Relationships() {
         const data = await getRelationships();
         
         // Map the data and add mock AI scores and initial feedback
-        let reviewData: ReviewItem[] = data.map(rel => ({
-          ...rel,
-          aiScore: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
-          feedback: 0
-        }));
+        let reviewData: ReviewItem[] = data.map(rel => {
+          // Fallback to MOCK_APPLICANTS if aiScore is missing
+          let score = rel.aiScore;
+          if (score === undefined) {
+            const applicant = MOCK_APPLICANTS.find(a => a.id === rel.startupId);
+            score = applicant ? applicant.score : 85;
+          }
+          return {
+            ...rel,
+            aiScore: score,
+            feedback: 0
+          };
+        });
 
         // For styling demonstration purposes, if the service returns empty, 
         // we inject some mock approved relationships.
