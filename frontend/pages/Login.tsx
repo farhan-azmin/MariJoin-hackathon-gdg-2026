@@ -19,6 +19,8 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     // Mock Google login logic
+    // In a real application, this would integrate with Firebase Auth or Google Identity Services
+    alert("This is a demo. In a real app, this would open the Google Sign-In popup.");
     navigate('/startup/register');
   };
 
