@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { saveRelationship } from '../../services/firebaseService';
-import { STARTUPS } from '../../constants/mockData';
+import { STARTUPS, PROGRAMMES } from '../../constants/mockData';
 
 // Map STARTUPS to the format needed for the table, adding mock scores and summaries
 export const MOCK_APPLICANTS = STARTUPS.map((startup, index) => {
@@ -26,12 +26,17 @@ export const MOCK_APPLICANTS = STARTUPS.map((startup, index) => {
     summary = 'Incomplete application. High market competition.';
   }
 
+  // Assign a mock programme based on index
+  const programmeObj = PROGRAMMES[index % PROGRAMMES.length];
+
   return {
     id: startup.id,
     name: startup.name,
     summary,
     score,
-    risk
+    risk,
+    programmeId: programmeObj.id,
+    programmeName: programmeObj.name
   };
 });
 
@@ -50,7 +55,8 @@ export default function Applicants() {
   const filteredApplicants = applicants.filter(app => {
     const matchesFilter = activeFilter === 'All applicants' || app.risk === activeFilter;
     const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          app.summary.toLowerCase().includes(searchQuery.toLowerCase());
+                          app.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          app.programmeName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -74,10 +80,12 @@ export default function Applicants() {
   const handleApprove = async (applicantId: string, applicantName: string) => {
     setApprovingId(applicantId);
     try {
-      // In a real app, we would determine the best programme or mentor here, 
-      // or this quick approve might just assign a default/pending status.
-      // For this demo, we'll assign a mock programme ID 'p1' (CIP Spark).
-      await saveRelationship(applicantId, 'pending_mentor', 'p1', 'approved');
+      const appData = applicants.find(a => a.id === applicantId);
+      const score = appData ? appData.score : 85;
+      const progId = appData ? appData.programmeId : 'p1';
+      
+      // Save the relationship with the specific programme and score
+      await saveRelationship(applicantId, 'pending_mentor', progId, 'approved', score);
       
       // Remove the approved applicant from the list
       setApplicants(prev => prev.filter(app => app.id !== applicantId));
@@ -121,7 +129,7 @@ export default function Applicants() {
           </div>
           <input
             type="text"
-            placeholder="Search an applicant"
+            placeholder="Search an applicant or programme"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#603ADE] focus:border-[#603ADE] sm:text-sm transition-colors"
@@ -136,7 +144,7 @@ export default function Applicants() {
                 <tr>
                   <th className="py-4 pr-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-12"></th>
                   <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/4">Name</th>
-                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/2">
+                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/3">
                     <div className="flex items-center gap-2">
                       <svg className="w-4 h-4 text-[#603ADE]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -144,6 +152,7 @@ export default function Applicants() {
                       Summary
                     </div>
                   </th>
+                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200">Programme</th>
                   <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200">Score</th>
                   <th className="py-4 pl-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 text-right"></th>
                 </tr>
@@ -155,6 +164,11 @@ export default function Applicants() {
                       <td className="py-4 pr-4 text-sm text-gray-500 pl-4">{startIndex + index + 1}</td>
                       <td className="py-4 px-4 text-sm text-gray-800 font-medium">{app.name}</td>
                       <td className="py-4 px-4 text-sm text-gray-600">{app.summary}</td>
+                      <td className="py-4 px-4 text-sm text-gray-600">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-[#603ADE] border border-indigo-100">
+                          {app.programmeName}
+                        </span>
+                      </td>
                       <td className="py-4 px-4 text-sm text-gray-800">
                         <div className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${getScoreColor(app.score)}`}></span>
@@ -199,7 +213,7 @@ export default function Applicants() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-500">
+                    <td colSpan={6} className="py-8 text-center text-gray-500">
                       No applicants found matching your criteria.
                     </td>
                   </tr>
