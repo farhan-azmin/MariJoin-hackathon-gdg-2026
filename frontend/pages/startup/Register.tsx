@@ -464,10 +464,12 @@ export default function Register() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-[#603ADE] rounded-lg flex items-center justify-center shadow-md">
-              <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center shadow-md">
+            <img 
+              src="https://cdn.prod.website-files.com/68368ce832f0c7a60f7a272b/6a08d5fadbad56f54f3c16a6_network-topology.png" 
+              alt="MariJoin Logo" 
+              className="w-8 h-8 object-contain"
+            />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">MariJoin</h1>
           </div>
