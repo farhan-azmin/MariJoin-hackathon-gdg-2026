@@ -35,8 +35,8 @@ Your goal is to find the SINGLE BEST matching Cradle programme for the given sta
 Name: ${startup.name}
 Industry: ${startup.industry}
 Stage: ${startup.stage}
-Goals: Seeking funding and market expansion
-Challenges: ${startup.problemSolved}
+Goals: ${startup.primaryGoals}
+Challenges: ${startup.currentChallenges}
 
 ---
 
@@ -49,9 +49,12 @@ ${JSON.stringify(programmes, null, 2)}
 
 1. Analyze all programmes and select the SINGLE BEST fit for the startup.
 2. Generate match_score (0–100). This should reflect a high degree of confidence if it's the best match.
-3. Generate match_reason (3–5 detailed, comprehensive paragraphs explaining exactly why this is the best fit, referencing specific startup details and programme criteria).
-4. Predict success outcome.
-5. Create a detailed engagement strategy.
+3. Generate match_reason (3–5 detailed paragraphs). CRITICAL: The reasoning MUST perfectly align with the match_score. 
+   - If the score is high (80-100), praise the strong alignment and explain exactly why it's a great fit.
+   - If the score is medium (50-79), point out the specific gaps, missing traction, or mismatches that prevented a higher score.
+   - If the score is low (<50), explicitly explain the severe mismatches and why the score is low despite being the "best" available option.
+4. Predict success outcome (High/Medium/Low) matching the score.
+5. Create a detailed engagement strategy tailored to the score (e.g., fast-track if high, monitor if medium, reject/redirect if low).
 6. Define outcome tracking fields (metrics to monitor success).
 7. Build a relationship intelligence object for this single match.
 8. Build a UI card for frontend display for this single match.
@@ -147,7 +150,7 @@ Return ONLY valid JSON with two sections:
 - UI must be clean and card-based.
 - UI must be ready for frontend rendering (React or HTML).
 - Keep UI simple but professional.
-- Ensure reasoning is human-readable, detailed, and comprehensive.
+- Ensure reasoning is human-readable, detailed, and perfectly justifies the numerical score.
 - Ensure relationships are structured for database storage.
   `;
 
