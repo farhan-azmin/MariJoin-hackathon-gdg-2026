@@ -8,46 +8,84 @@ import { NexusGraphResponse, Startup } from '../../types';
 import { MOCK_APPLICANTS } from './Applicants';
 
 // Mock fallback data in case API fails (e.g., missing API key)
-const getMockResponse = (startupName: string, score: number): NexusGraphResponse => ({
-  startup_name: startupName,
-  relationships: [
-    {
-      relationship_id: "rel_p1",
-      entity_type: "startup-programme-relationship",
-      startup: { name: startupName, industry: "Tech", stage: "Seed" },
-      programme: { id: "p1", name: "CIP Spark", focusArea: "Early-stage tech startups" },
-      match_score: score,
-      match_reason: [
-        `The startup's current stage perfectly aligns with CIP Spark's target demographic. Given their focus on ${startupName}'s specific industry challenges, this programme provides the necessary foundational support.`,
-        "Their tech-focused product meets the core eligibility criteria for the grant, demonstrating a clear path towards MVP completion and initial market testing.",
-        "The requested funding amount and proposed use of funds are well within the programme's typical allocation limits, suggesting a high likelihood of successful deployment and milestone achievement."
-      ],
-      predicted_outcome: score >= 80 ? "High success probability" : score >= 50 ? "Medium success probability" : "Low success probability",
-      engagement_strategy: "Fast-track application for initial funding tranche. Assign a technical mentor immediately upon approval to guide MVP development.",
-      risk_factors: ["Requires clear commercialization plan", "Potential delays in technical execution"],
-      outcome_tracking_fields: ["MVP Completion Date", "First 100 Active Users", "Initial Revenue Generation"],
-      status: "suggested"
-    }
-  ],
-  ui_screen: {
-    screen_name: "Programme Recommendations Dashboard",
-    header: {
-      title: "Best Recommended Programme",
-      subtitle: `AI-powered ecosystem matching result for ${startupName}`
-    },
-    cards: [
+// Dynamically generates reasoning based on the score to avoid conflicts
+const getMockResponse = (startupName: string, score: number): NexusGraphResponse => {
+  const isHigh = score >= 80;
+  const isMedium = score >= 50 && score < 80;
+
+  const programmeName = isHigh ? "CIP Spark" : isMedium ? "CIP Sprint" : "GreenTech Accelerator";
+  
+  const matchReason = isHigh ? [
+    `The startup's current stage and industry perfectly align with the programme's target demographic, resulting in a high match score of ${score}%.`,
+    `Their primary goals and current challenges are exactly what this programme is designed to address, ensuring maximum impact and support.`,
+    `The requested funding amount and proposed use of funds are well within the programme's typical allocation limits, suggesting a high likelihood of successful deployment.`
+  ] : isMedium ? [
+    `The startup shows moderate potential with a score of ${score}%, but there are notable gaps between their current stage and the programme's ideal criteria.`,
+    `While their industry aligns, their current challenges suggest they might need more foundational traction before fully benefiting from this specific programme.`,
+    `The match is viable, but requires careful monitoring and potentially a tailored engagement strategy to bridge the identified gaps in their application.`
+  ] : [
+    `This match scored a low ${score}% due to significant misalignments between the startup's profile and the programme's core objectives.`,
+    `The startup's stage and primary goals do not fit the strict eligibility criteria, making it a high-risk investment of time and resources.`,
+    `Major pivots or significant progress would be required before this programme becomes a suitable fit for ${startupName}.`
+  ];
+
+  const predictedOutcome = isHigh ? "High success probability" : isMedium ? "Medium success probability" : "Low success probability";
+  
+  const engagementStrategy = isHigh 
+    ? "Fast-track application for initial funding tranche. Assign a technical mentor immediately upon approval to guide MVP development." 
+    : isMedium 
+    ? "Keep in pipeline. Provide feedback on required traction metrics before full approval. Monitor progress over the next quarter." 
+    : "Redirect to other general tech programmes. Do not proceed with current application as criteria are not met.";
+
+  const riskFactors = isHigh 
+    ? ["Requires clear commercialization plan", "Potential delays in technical execution"] 
+    : isMedium 
+    ? ["Insufficient revenue history", "Premature scaling risk", "Market competition"] 
+    : ["Mission drift", "Severe criteria mismatch", "High failure risk"];
+
+  const highlights = isHigh 
+    ? ["Matches current stage", "High eligibility score", "Strong industry alignment"] 
+    : isMedium 
+    ? ["Good industry fit", "Stage mismatch", "Needs more traction"] 
+    : ["Low relevance", "Criteria mismatch", "High risk profile"];
+
+  return {
+    startup_name: startupName,
+    relationships: [
       {
-        type: "programme_card",
-        programme_name: "CIP Spark",
+        relationship_id: "rel_p1",
+        entity_type: "startup-programme-relationship",
+        startup: { name: startupName, industry: "Tech", stage: "Seed" },
+        programme: { id: "p1", name: programmeName, focusArea: "Tech Startups" },
         match_score: score,
-        tags: ["Early Stage", "Funding", "Tech"],
-        highlights: ["Matches current stage", "High eligibility score", "Strong industry alignment"],
-        recommendation_reason: "Ideal fit for early-stage tech development and foundational support.",
-        cta: "Approve Match"
+        match_reason: matchReason,
+        predicted_outcome: predictedOutcome,
+        engagement_strategy: engagementStrategy,
+        risk_factors: riskFactors,
+        outcome_tracking_fields: ["MVP Completion Date", "First 100 Active Users", "Initial Revenue Generation"],
+        status: "suggested"
       }
-    ]
-  }
-});
+    ],
+    ui_screen: {
+      screen_name: "Programme Recommendations Dashboard",
+      header: {
+        title: "Best Recommended Programme",
+        subtitle: `AI-powered ecosystem matching result for ${startupName}`
+      },
+      cards: [
+        {
+          type: "programme_card",
+          programme_name: programmeName,
+          match_score: score,
+          tags: isHigh ? ["Early Stage", "Funding", "Tech"] : isMedium ? ["Growth", "Commercialization"] : ["Sustainability", "Impact"],
+          highlights: highlights,
+          recommendation_reason: isHigh ? "Ideal fit for early-stage tech development and foundational support." : isMedium ? "Consider for future pipeline once traction is proven." : "Not recommended due to lack of focus alignment.",
+          cta: "Approve Match"
+        }
+      ]
+    }
+  };
+};
 
 export default function ApplicantDetails() {
   const { id } = useParams<{ id: string }>();
@@ -148,8 +186,8 @@ export default function ApplicantDetails() {
       const programme = PROGRAMMES.find(p => p.name === programmeName);
       const programmeId = programme ? programme.id : 'unknown_programme';
       
-      // Save the relationship with the specific status
-      await saveRelationship(startup.id, 'pending_mentor', programmeId, action);
+      // Save the relationship with the specific status and consistent score
+      await saveRelationship(startup.id, 'pending_mentor', programmeId, action, consistentScore);
       
       // Redirect to postmortem page
       navigate('/admin/relationships');
@@ -200,8 +238,12 @@ export default function ApplicantDetails() {
               <p className="font-medium text-gray-900">{startup.funding}</p>
             </div>
             <div className="col-span-3">
-              <p className="text-sm text-gray-500 mb-1">Problem Solved</p>
-              <p className="text-gray-800 bg-gray-50 p-3 rounded-lg border border-gray-100">{startup.problemSolved}</p>
+              <p className="text-sm text-gray-500 mb-1">Primary Goals</p>
+              <p className="text-gray-800 bg-gray-50 p-3 rounded-lg border border-gray-100">{startup.primaryGoals}</p>
+            </div>
+            <div className="col-span-3">
+              <p className="text-sm text-gray-500 mb-1">Current Challenges</p>
+              <p className="text-gray-800 bg-gray-50 p-3 rounded-lg border border-gray-100">{startup.currentChallenges}</p>
             </div>
           </div>
         </div>
@@ -316,6 +358,20 @@ export default function ApplicantDetails() {
                           </p>
                         </div>
                       </div>
+                      
+                      {/* Risk Factors */}
+                      {aiData.relationships[0].risk_factors && aiData.relationships[0].risk_factors.length > 0 && (
+                        <div className="md:col-span-2">
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Risk Factors</p>
+                          <div className="bg-red-50 border border-red-100 rounded-lg p-3">
+                            <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
+                              {aiData.relationships[0].risk_factors.map((risk, i) => (
+                                <li key={i}>{risk}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Outcome Tracking Fields */}
