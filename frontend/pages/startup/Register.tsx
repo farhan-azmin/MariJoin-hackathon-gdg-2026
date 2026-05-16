@@ -7,7 +7,7 @@ const SECTIONS = [
   'Ownership & Structure',
   'Startup Stage & Maturity',
   'Industry / Sector',
-  'Problem & Solution',
+  'Goals & Challenges',
   'Product & Technology',
   'Market & Traction',
   'Funding Application',
@@ -37,8 +37,8 @@ export default function Register() {
     stage: '', launchYear: '', monthlyRevenue: '', totalFunding: '',
     // 5. Industry
     industry: '', otherIndustry: '', productDescription: '',
-    // 6. Problem & Solution
-    problem: '', targetCustomers: '', solution: '', uniqueValue: '',
+    // 6. Goals & Challenges
+    primaryGoals: '', currentChallenges: '', targetCustomers: '', uniqueValue: '',
     // 7. Product & Tech
     ownIp: '', licenseIp: '', techStack: '', hasPrototype: '',
     // 8. Market & Traction
@@ -94,8 +94,8 @@ export default function Register() {
         return !!formData.stage;
       case 4: // Industry
         return !!(formData.industry && (formData.industry !== 'Other' || formData.otherIndustry));
-      case 5: // Problem & Solution
-        return !!(formData.problem && formData.solution);
+      case 5: // Goals & Challenges
+        return !!(formData.primaryGoals && formData.currentChallenges);
       case 6: // Product & Tech
         return !!(formData.ownIp && formData.hasPrototype);
       case 7: // Market & Traction
@@ -278,12 +278,12 @@ export default function Register() {
             <div><label className="block text-sm font-medium text-gray-700">Brief description of product/service</label><textarea name="productDescription" value={formData.productDescription} onChange={handleChange} rows={4} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" /></div>
           </div>
         );
-      case 5: // Problem & Solution
+      case 5: // Goals & Challenges
         return (
           <div className="space-y-4 animate-fade-in">
-            <div><label className="block text-sm font-medium text-gray-700">What problem are you solving? <span className="text-red-500">*</span></label><textarea name="problem" value={formData.problem} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" required /></div>
+            <div><label className="block text-sm font-medium text-gray-700">Primary Goals <span className="text-red-500">*</span></label><textarea name="primaryGoals" value={formData.primaryGoals} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" required /></div>
+            <div><label className="block text-sm font-medium text-gray-700">Current Challenges <span className="text-red-500">*</span></label><textarea name="currentChallenges" value={formData.currentChallenges} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" required /></div>
             <div><label className="block text-sm font-medium text-gray-700">Who are your target customers?</label><textarea name="targetCustomers" value={formData.targetCustomers} onChange={handleChange} rows={2} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" /></div>
-            <div><label className="block text-sm font-medium text-gray-700">What is your solution? <span className="text-red-500">*</span></label><textarea name="solution" value={formData.solution} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" required /></div>
             <div><label className="block text-sm font-medium text-gray-700">What makes your solution unique?</label><textarea name="uniqueValue" value={formData.uniqueValue} onChange={handleChange} rows={2} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#603ADE] focus:ring-[#603ADE] sm:text-sm py-2 px-3 border" /></div>
           </div>
         );
