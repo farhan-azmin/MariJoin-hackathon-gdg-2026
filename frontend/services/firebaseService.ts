@@ -7,14 +7,16 @@ let mockRelationshipsStore: Relationship[] = [
     startupId: 's1',
     mentorId: 'm1',
     programmeId: 'p1',
-    status: 'approved'
+    status: 'approved',
+    aiScore: 95
   },
   {
     id: 'rel_2',
     startupId: 's3',
     mentorId: 'm3',
     programmeId: 'p2',
-    status: 'approved'
+    status: 'approved',
+    aiScore: 82
   }
 ];
 
@@ -25,9 +27,10 @@ export const saveRelationship = async (
   startupId: string,
   mentorId: string,
   programmeId: string,
-  status: 'approved' | 'pending' | 'rejected' = 'approved'
+  status: 'approved' | 'pending' | 'rejected' = 'approved',
+  aiScore?: number
 ): Promise<Relationship> => {
-  console.log(`Saving relationship: Startup ${startupId}, Mentor ${mentorId}, Programme ${programmeId}, Status ${status}`);
+  console.log(`Saving relationship: Startup ${startupId}, Mentor ${mentorId}, Programme ${programmeId}, Status ${status}, Score ${aiScore}`);
   
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -37,7 +40,8 @@ export const saveRelationship = async (
     startupId,
     mentorId,
     programmeId,
-    status
+    status,
+    aiScore
   };
 
   // Add to our in-memory store
