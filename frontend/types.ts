@@ -4,7 +4,8 @@ export interface Startup {
   industry: string;
   stage: string;
   funding: string;
-  problemSolved: string;
+  primaryGoals: string;
+  currentChallenges: string;
 }
 
 export interface Mentor {
@@ -81,4 +82,5 @@ export interface Relationship {
   mentorId: string;
   programmeId: string;
   status: 'approved' | 'pending' | 'rejected';
+  aiScore?: number;
 }
