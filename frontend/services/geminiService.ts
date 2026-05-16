@@ -23,7 +23,7 @@ You generate:
 1. Structured relationship intelligence (for backend storage)
 2. UI-ready data (for frontend rendering)
 
-Your goal is to match startups with Cradle programmes and produce both:
+Your goal is to find the SINGLE BEST matching Cradle programme for the given startup and produce both:
 - machine-readable relationship objects
 - human-readable UI components
 
@@ -47,16 +47,14 @@ ${JSON.stringify(programmes, null, 2)}
 
 # TASK
 
-For each programme:
-
-1. Compute compatibility with startup
-2. Generate match_score (0–100)
-3. Generate match_reason (3–5 detailed points explaining the score)
-4. Predict success outcome
-5. Create engagement strategy
-6. Define outcome tracking fields (metrics to monitor success)
-7. Build a relationship intelligence object
-8. Build a UI card for frontend display
+1. Analyze all programmes and select the SINGLE BEST fit for the startup.
+2. Generate match_score (0–100). This should reflect a high degree of confidence if it's the best match.
+3. Generate match_reason (3–5 detailed, comprehensive paragraphs explaining exactly why this is the best fit, referencing specific startup details and programme criteria).
+4. Predict success outcome.
+5. Create a detailed engagement strategy.
+6. Define outcome tracking fields (metrics to monitor success).
+7. Build a relationship intelligence object for this single match.
+8. Build a UI card for frontend display for this single match.
 
 ---
 
@@ -87,14 +85,14 @@ Return ONLY valid JSON with two sections:
    "match_score": 0 to 100,
 
    "match_reason": [
-    "Detailed reason 1 explaining the score",
-    "Detailed reason 2 explaining the score",
-    "Detailed reason 3 explaining the score"
+    "Detailed paragraph 1 explaining the score and alignment...",
+    "Detailed paragraph 2 explaining the score and alignment...",
+    "Detailed paragraph 3 explaining the score and alignment..."
    ],
 
    "predicted_outcome": "High / Medium / Low success",
 
-   "engagement_strategy": "How startup should engage with the programme",
+   "engagement_strategy": "Detailed strategy on how startup should engage with the programme...",
 
    "risk_factors": [
     "Optional risks"
@@ -113,8 +111,8 @@ Return ONLY valid JSON with two sections:
   "screen_name": "Programme Recommendations Dashboard",
 
   "header": {
-   "title": "Recommended Programmes",
-   "subtitle": "AI-powered ecosystem matching results for ${startup.name}"
+   "title": "Best Recommended Programme",
+   "subtitle": "AI-powered ecosystem matching result for ${startup.name}"
   },
 
   "cards": [
@@ -144,13 +142,13 @@ Return ONLY valid JSON with two sections:
 # RULES
 
 - Output ONLY valid JSON (no explanations)
-- Always include at least 2 programmes
-- match_score must be an integer from 0 to 100
-- UI must be clean and card-based
-- UI must be ready for frontend rendering (React or HTML)
-- Keep UI simple but professional
-- Ensure reasoning is human-readable and detailed
-- Ensure relationships are structured for database storage
+- Return EXACTLY ONE programme match (the best one).
+- match_score must be an integer from 0 to 100.
+- UI must be clean and card-based.
+- UI must be ready for frontend rendering (React or HTML).
+- Keep UI simple but professional.
+- Ensure reasoning is human-readable, detailed, and comprehensive.
+- Ensure relationships are structured for database storage.
   `;
 
   try {
