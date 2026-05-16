@@ -6,20 +6,22 @@ import { STARTUPS } from '../../constants/mockData';
 
 // Map STARTUPS to the format needed for the table, adding mock scores and summaries
 export const MOCK_APPLICANTS = STARTUPS.map((startup, index) => {
-  // Generate some varied mock data based on index
-  let score = 85;
+  // Generate random unique scores
+  // Use a seeded random approach based on index to keep it consistent across renders
+  // but varied across the list.
+  const baseScore = 30 + (index * 7) % 70; // Distribute scores between 30 and 100
+  const score = Math.min(100, Math.max(0, baseScore));
+
   let risk = 'No risk';
   let summary = 'Legit documents with average portfolio.';
 
-  if (index % 10 === 0 || index % 10 === 5) {
-    score = 100;
+  if (score >= 80) {
+    risk = 'No risk';
     summary = 'Great portfolio. Legit documents. No risk.';
-  } else if (index % 10 === 2 || index % 10 === 7) {
-    score = 52;
+  } else if (score >= 50) {
     risk = 'Medium risk';
     summary = 'Missing some financial history. Good product.';
-  } else if (index % 10 === 3 || index % 10 === 8) {
-    score = 38;
+  } else {
     risk = 'High risk';
     summary = 'Incomplete application. High market competition.';
   }
@@ -127,82 +129,84 @@ export default function Applicants() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left border-collapse">
-            <thead className="bg-neutral-100">
-              <tr>
-                <th className="py-4 pr-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-12"></th>
-                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/4">Name</th>
-                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/2">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-[#603ADE]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                    Summary
-                  </div>
-                </th>
-                <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200">Score</th>
-                <th className="py-4 pl-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 text-right"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {paginatedApplicants.length > 0 ? (
-                paginatedApplicants.map((app, index) => (
-                  <tr key={app.id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="py-4 pr-4 text-sm text-gray-500 pl-4">{startIndex + index + 1}</td>
-                    <td className="py-4 px-4 text-sm text-gray-800 font-medium">{app.name}</td>
-                    <td className="py-4 px-4 text-sm text-gray-600">{app.summary}</td>
-                    <td className="py-4 px-4 text-sm text-gray-800">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${getScoreColor(app.score)}`}></span>
-                        {app.score}%
-                      </div>
-                    </td>
-                    <td className="py-4 pl-4 text-right pr-4">
-                      <div className="flex items-center justify-end gap-4">
-                        <button 
-                          onClick={() => handleApprove(app.id, app.name)}
-                          disabled={approvingId === app.id}
-                          title="Quick Approve"
-                          className={`border rounded-full px-4 py-1 transition-colors focus:outline-none flex items-center justify-center ${
-                            approvingId === app.id 
-                              ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
-                              : 'border-[#603ADE] text-[#603ADE] hover:bg-[#603ADE] hover:text-white'
-                          }`}
-                        >
-                          {approvingId === app.id ? (
-                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left border-collapse">
+              <thead className="bg-neutral-100">
+                <tr>
+                  <th className="py-4 pr-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-12"></th>
+                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/4">Name</th>
+                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 w-1/2">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-[#603ADE]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      Summary
+                    </div>
+                  </th>
+                  <th className="py-4 px-4 text-sm font-medium text-neutral-600 border-b border-neutral-200">Score</th>
+                  <th className="py-4 pl-4 text-sm font-medium text-neutral-600 border-b border-neutral-200 text-right"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {paginatedApplicants.length > 0 ? (
+                  paginatedApplicants.map((app, index) => (
+                    <tr key={app.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="py-4 pr-4 text-sm text-gray-500 pl-4">{startIndex + index + 1}</td>
+                      <td className="py-4 px-4 text-sm text-gray-800 font-medium">{app.name}</td>
+                      <td className="py-4 px-4 text-sm text-gray-600">{app.summary}</td>
+                      <td className="py-4 px-4 text-sm text-gray-800">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${getScoreColor(app.score)}`}></span>
+                          {app.score}%
+                        </div>
+                      </td>
+                      <td className="py-4 pl-4 text-right pr-4">
+                        <div className="flex items-center justify-end gap-4">
+                          <button 
+                            onClick={() => handleApprove(app.id, app.name)}
+                            disabled={approvingId === app.id}
+                            title="Quick Approve"
+                            className={`border rounded-full px-4 py-1 transition-colors focus:outline-none flex items-center justify-center ${
+                              approvingId === app.id 
+                                ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
+                                : 'border-[#603ADE] text-[#603ADE] hover:bg-[#603ADE] hover:text-white'
+                            }`}
+                          >
+                            {approvingId === app.id ? (
+                              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                          <button 
+                            onClick={() => navigate(`/admin/applicants/${app.id}`)}
+                            title="View Details & AI Analysis"
+                            className="text-gray-400 hover:text-gray-800 transition-colors focus:outline-none"
+                          >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
-                          ) : (
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </button>
-                        <button 
-                          onClick={() => navigate(`/admin/applicants/${app.id}`)}
-                          title="View Details & AI Analysis"
-                          className="text-gray-400 hover:text-gray-800 transition-colors focus:outline-none"
-                        >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                          </svg>
-                        </button>
-                      </div>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500">
+                      No applicants found matching your criteria.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-500">
-                    No applicants found matching your criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination */}
